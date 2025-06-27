@@ -1,224 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Supernova 🤖</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      background: linear-gradient(to right, #dff6ff, #f3faff);
-    }
-    .sidebar {
-      width: 250px;
-      background: #002244;
-      color: white;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    }
-    .sidebar h2 {
-      margin-top: 0;
-      color: #00d9ff;
-    }
-    .chat-list {
-      flex: 1;
-      overflow-y: auto;
-      margin-top: 20px;
-    }
-    .chat-list div {
-      padding: 10px;
-      border-bottom: 1px solid #004466;
-      cursor: pointer;
-    }
-    .chat-list div:hover {
-      background: #003355;
-    }
-    .new-chat-btn {
-      padding: 10px;
-      background: #00d9ff;
-      border: none;
-      color: #002244;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      background: #ffffff;
-    }
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      background: #e6f7ff;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
-    }
-    .message {
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 10px;
-      max-width: 80%;
-    }
-    .user {
-      text-align: right;
-      background-color: #d0f0ff;
-      color: #003366;
-      margin-left: auto;
-    }
-    .bot {
-      text-align: left;
-      background-color: #e6f7ff;
-      color: #000;
-      margin-right: auto;
-    }
-    .input-area {
-      display: flex;
-      margin-top: 10px;
-    }
-    .input-area input {
-      flex: 1;
-      padding: 10px;
-      font-size: 1em;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .input-area button {
-      padding: 10px;
-      font-size: 1em;
-      margin-left: 10px;
-      background: #00d9ff;
-      color: #002244;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .thinking {
-      font-style: italic;
-      color: #888;
-      margin-top: 10px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatNova</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      padding: 1rem;
+      background: #5a67d8;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      box-shadow: 0 4px 8px #00000033;
+      position: relative;
+    }
+    #clear-chat {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #4fd1c5;
+      border: none;
+      border-radius: 1rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      color: black;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .bubble {
+      max-width: 70%;
+      margin: 0.5rem;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px #00000033;
+      white-space: pre-wrap;
+    }
+    .user {
+      align-self: flex-end;
+      background: #805ad5;
+    }
+    .bot {
+      align-self: flex-start;
+      background: #4fd1c5;
+      color: black;
+    }
+    .typing {
+      font-style: italic;
+      opacity: 0.8;
+    }
+    form {
+      display: flex;
+      padding: 1rem;
+      background: #5a67d8;
+    }
+    input {
+      flex: 1;
+      padding: 0.8rem;
+      border-radius: 1rem;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      margin-left: 0.5rem;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 1rem;
+      background: #38b2ac;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Supernova</h2>
-    <button class="new-chat-btn" onclick="newChat()">+ New Chat</button>
-    <div class="chat-list" id="chatList"></div>
-  </div>
-  <div class="chat-container">
-    <div class="messages" id="messages"></div>
-    <div class="thinking" id="thinking"></div>
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Say something...">
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div> 
+  <header>
+    🤖 ChatNova
+    <button id="clear-chat">Clear</button>
+  </header>
+  <main id="chat"></main>
+  <form id="chat-form">
+    <input id="message" placeholder="Say something..." required />
+    <button type="submit">Send</button>
+  </form>
 
-  <script>
-    const apiKey = "YOUR_API_KEY";
-    let memory = JSON.parse(localStorage.getItem("supernovaMemory")) || {};
-    let currentChat = JSON.parse(localStorage.getItem("supernovaCurrent")) || [];
-    let chatHistory = JSON.parse(localStorage.getItem("supernovaHistory")) || []; 
+  <script>
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message');
+    const clearBtn = document.getElementById('clear-chat');
 
-    function saveState() {
-      localStorage.setItem("supernovaMemory", JSON.stringify(memory));
-      localStorage.setItem("supernovaCurrent", JSON.stringify(currentChat));
-      localStorage.setItem("supernovaHistory", JSON.stringify(chatHistory));
-    } 
+    function appendMessage(text, type) {
+      const div = document.createElement('div');
+      div.className = `bubble ${type}`;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-    function newChat() {
-      if (currentChat.length > 0) chatHistory.push(currentChat);
-      currentChat = [];
-      saveState();
-      renderMessages();
-      renderChatList();
-    } 
+    function appendTyping() {
+      const div = document.createElement('div');
+      div.className = 'bubble bot typing';
+      div.textContent = 'Nova is typing...';
+      div.id = 'typing';
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-    function renderChatList() {
-      const chatList = document.getElementById("chatList");
-      chatList.innerHTML = "";
-      chatHistory.forEach((chat, i) => {
-        const div = document.createElement("div");
-        div.textContent = "Chat #" + (i + 1);
-        div.onclick = () => {
-          currentChat = chat;
-          saveState();
-          renderMessages();
-        };
-        chatList.appendChild(div);
-      });
-    } 
+    function removeTyping() {
+      const typing = document.getElementById('typing');
+      if (typing) typing.remove();
+    }
 
-    function renderMessages() {
-      const messagesDiv = document.getElementById("messages");
-      messagesDiv.innerHTML = "";
-      currentChat.forEach(msg => {
-        const p = document.createElement("div");
-        p.className = "message " + msg.sender;
-        p.textContent = msg.text;
-        messagesDiv.appendChild(p);
-      });
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    } 
+    function saveChat() {
+      localStorage.setItem('chatNovaHistory', chat.innerHTML);
+    }
 
-    async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const text = input.value;
-      if (!text.trim()) return; 
+    function loadChat() {
+      const saved = localStorage.getItem('chatNovaHistory');
+      if (saved) chat.innerHTML = saved;
+    }
 
-      currentChat.push({ sender: "user", text });
-      renderMessages();
-      input.value = "";
-      document.getElementById("thinking").textContent = "Thinking..."; 
+    function clearChat() {
+      chat.innerHTML = '';
+      localStorage.removeItem('chatNovaHistory');
+      appendMessage("Hi! I'm Nova 🤖 — your friendly chatbot! Ask me anything.", 'bot');
+    }
 
-      let facts = Object.entries(memory).map(([key, value]) => `- ${key}: ${value}`).join("\n");
-      let memoryPrompt = facts ? `Here are things to remember about the user:\n${facts}` : ""; 
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userMsg = input.value;
+      appendMessage(userMsg, 'user');
+      input.value = '';
+      saveChat();
 
-      let messagesForAPI = [
-        { role: "system", content: `You are Supernova, an AI built by Spark. Be helpful and remember important facts about the user.\n${memoryPrompt}` },
-        ...currentChat.map(m => ({ role: m.sender === "user" ? "user" : "assistant", content: m.text }))
-      ]; 
+      appendTyping();
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: messagesForAPI
-        })
-      }); 
+      try {
+        const response = await fetch("https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ inputs: { text: userMsg } })
+        });
+        const data = await response.json();
+        removeTyping();
+        const botMsg = data?.generated_text || "Hmm... I didn't quite catch that.";
+        appendMessage(botMsg, 'bot');
+        saveChat();
+      } catch (error) {
+        removeTyping();
+        appendMessage("Oops! Something went wrong.", 'bot');
+      }
+    });
 
-      const data = await response.json();
-      const reply = data.choices?.[0]?.message?.content || "Oops, something went wrong!";
-      currentChat.push({ sender: "bot", text: reply });
-      document.getElementById("thinking").textContent = "";
-      renderMessages();
-      saveState(); 
+    clearBtn.addEventListener('click', clearChat);
 
-      // Basic fact extraction: "My name is Spark" → memory.name = Spark
-      if (/my name is (\w+)/i.test(text)) {
-        const name = text.match(/my name is (\w+)/i)[1];
-        memory.name = name;
-        saveState();
-      }
-    } 
-
-    renderMessages();
-    renderChatList();
-  </script>
+    // Load chat history and greeting on startup
+    window.addEventListener('load', () => {
+      loadChat();
+      if (!chat.innerHTML) {
+        appendMessage("Hi! I'm Nova 🤖 — your friendly chatbot! Ask me anything.", 'bot');
+      }
+    });
+  </script>
 </body>
-  </html>
+</html>
