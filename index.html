@@ -126,13 +126,35 @@
     const themeSelect = document.getElementById('theme');
 
     const hpLinks = [
-      { title: "Harry Potter and the Philosopher's Stone", url: "https://readanybook.com/online/565520" },
-      { title: "Harry Potter and the Chamber of Secrets", url: "https://readanybook.com/online/565521" },
-      { title: "Harry Potter and the Prisoner of Azkaban", url: "https://readanybook.com/online/565522" },
-      { title: "Harry Potter and the Goblet of Fire", url: "https://readanybook.com/online/565523" },
-      { title: "Harry Potter and the Order of the Phoenix", url: "https://readanybook.com/online/565524" },
-      { title: "Harry Potter and the Half-Blood Prince", url: "https://readanybook.com/online/565525" },
-      { title: "Harry Potter and the Deathly Hallows", url: "https://readanybook.com/online/565526" }
+      { title: "Harry Potter and the Philosopher's Stone", url: "https://readanybook.com/ebook/harry-potter-and-the-sorcerers-stone-65" },
+      { title: "Harry Potter and the Chamber of Secrets", url: "https://readanybook.com/ebook/harry-potter-and-the-chamber-of-secrets-66" },
+      { title: "Harry Potter and the Prisoner of Azkaban", url: "https://readanybook.com/ebook/harry-potter-and-the-prisoner-of-azkaban-67" },
+      { title: "Harry Potter and the Goblet of Fire", url: "https://readanybook.com/ebook/harry-potter-and-the-goblet-of-fire-68" },
+      { title: "Harry Potter and the Order of the Phoenix", url: "https://readanybook.com/ebook/harry-potter-and-the-order-of-the-phoenix-69" },
+      { title: "Harry Potter and the Half-Blood Prince", url: "https://readanybook.com/ebook/harry-potter-and-the-half-blood-prince-70" },
+      { title: "Harry Potter and the Deathly Hallows", url: "https://readanybook.com/ebook/harry-potter-and-the-deathly-hallows-71" }
+    ];
+
+    const enidBlytonMysteries = [
+      { title: "The Mystery of the Burnt Cottage", url: "https://archive.org/details/in.ernet.dli.2015.217727" },
+      { title: "The Mystery of the Disappearing Cat", url: "https://archive.org/details/in.ernet.dli.2015.219346" },
+      { title: "The Mystery of the Secret Room", url: "https://archive.org/details/in.ernet.dli.2015.263364" },
+      { title: "The Mystery of the Spiteful Letters", url: "https://archive.org/details/in.ernet.dli.2015.211043" },
+      { title: "The Mystery of the Missing Necklace", url: "https://archive.org/details/in.ernet.dli.2015.210044" },
+      { title: "The Mystery of the Hidden House", url: "https://archive.org/details/in.ernet.dli.2015.216383" }
+    ];
+
+    const famousFive = [
+      { title: "Five on a Treasure Island", url: "https://archive.org/details/fiveonatreasurei00blyt" },
+      { title: "Five Go Adventuring Again", url: "https://archive.org/details/fivegoadventurin00blyt" },
+      { title: "Five Run Away Together", url: "https://archive.org/details/fiverunawaytoget00blyt" },
+      { title: "Five Go to Smuggler's Top", url: "https://archive.org/details/fivegotosmuggler00blyt" },
+      { title: "Five Go Off in a Caravan", url: "https://archive.org/details/fivegooffincarav00blyt" },
+      { title: "Five on Kirrin Island Again", url: "https://archive.org/details/fiveonkirrinisla00blyt" },
+      { title: "Five Go Off to Camp", url: "https://archive.org/details/fivegoofftocamp00blyt" },
+      { title: "Five Get Into Trouble", url: "https://archive.org/details/fivegetintotroub00blyt" },
+      { title: "Five Fall Into Adventure", url: "https://archive.org/details/fivefallintoadve00blyt" },
+      { title: "Five on a Hike Together", url: "https://archive.org/details/fiveonahiketoget00blyt" }
     ];
 
     const adventureMysteryExtras = [
@@ -147,7 +169,7 @@
     function loadBooks(reset = false) {
       if (reset) list.innerHTML = '';
 
-      [...hpLinks, ...adventureMysteryExtras].forEach(book => {
+      [...hpLinks, ...enidBlytonMysteries, ...famousFive, ...adventureMysteryExtras].forEach(book => {
         const div = document.createElement('div');
         div.className = 'book';
         div.innerHTML = `
