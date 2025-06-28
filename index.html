@@ -3,93 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChatNova</title>
+  <title>Book Heaven</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <style>
+    :root {
+      --bg: #f0f0f0;
+      --fg: #222;
+      --accent: #667eea;
+      --card: #fff;
+    }
+    [data-theme="dark"] {
+      --bg: #1a202c;
+      --fg: #f7fafc;
+      --accent: #9f7aea;
+      --card: #2d3748;
+    }
+    [data-theme="candy"] {
+      --bg: #fff0f5;
+      --fg: #ff1493;
+      --accent: #ff69b4;
+      --card: #ffe4e1;
+    }
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #667eea, #764ba2);
-      color: white;
+      background: var(--bg);
+      color: var(--fg);
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
     header {
-      text-align: center;
       padding: 1rem;
-      background: #5a67d8;
+      text-align: center;
+      background: var(--accent);
+      color: white;
       font-size: 2rem;
       font-weight: bold;
-      box-shadow: 0 4px 8px #00000033;
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
-    main {
-      flex: 1;
+    #controls {
+      padding: 0.5rem 1rem;
+      background: var(--card);
       display: flex;
-      flex-direction: column;
-      padding: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
     }
-    .intro {
-      background: #4fd1c5;
-      color: black;
-      padding: 1rem;
-      border-radius: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 6px #00000033;
-    }
-    form {
-      display: flex;
-      margin-top: auto;
-    }
-    input {
-      flex: 1;
-      padding: 0.8rem;
-      border-radius: 1rem;
-      border: none;
+    input, select, button {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--accent);
       font-size: 1rem;
     }
     button {
-      margin-left: 0.5rem;
-      padding: 0.8rem 1.2rem;
-      border: none;
-      border-radius: 1rem;
-      background: #38b2ac;
-      color: black;
-      font-weight: bold;
       cursor: pointer;
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .book {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px #00000022;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .book img {
+      max-width: 100%;
+      border-radius: 0.5rem;
+    }
+    .book h3 {
+      margin: 0;
     }
     .footer {
-      text-align: center;
-      font-size: 0.9rem;
-      opacity: 0.7;
       padding: 0.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      background: var(--accent);
+      color: white;
     }
   </style>
 </head>
-<body>
-  <header>🤖 ChatNova</header>
-  <main>
-    <div class="intro">
-      Hey Spark! 👋 I’m Nova — your AI-powered reading buddy. Type what kind of book you want and I’ll launch ChatGPT for you!
-    </div>
-    <form id="nova-form">
-      <input id="userPrompt" placeholder="e.g. I want a mystery like Famous Five..." required />
-      <button type="submit">Ask Nova</button>
-    </form>
-  </main>
-  <div class="footer">Built with 💜 by Spark & Nova</div>
+<body data-theme="light">
+  <header>📚 Book Heaven</header>
+  <div id="controls">
+    <input id="search" placeholder="Search books..." />
+    <select id="theme">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="candy">Candy</option>
+    </select>
+    <button onclick="getRandomBook()">🎲 Random Book</button>
+    <button onclick="toggleEnidMode()">🔒 Enid Mode</button>
+    <button onclick="exportLibrary()">📤 Export</button>
+  </div>
+  <main id="book-list"></main>
+  <div class="footer">Built with 💖 by Spark & Nova</div>
 
   <script>
-    document.getElementById('nova-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = document.getElementById('userPrompt').value.trim();
-      if (input) {
-        const encoded = encodeURIComponent("I want a book recommendation. " + input);
-        window.open(`https://chat.openai.com/chat?prompt=${encoded}`, '_blank');
-      }
+    const list = document.getElementById('book-list');
+    const searchInput = document.getElementById('search');
+    const themeSelect = document.getElementById('theme');
+    let enidMode = false;
+
+    const books = [
+      { title: "The Famous Five", author: "Enid Blyton", cover: "https://covers.openlibrary.org/b/id/8228691-L.jpg", link: "https://openlibrary.org/works/OL362392W" },
+      { title: "The Hobbit", author: "J.R.R. Tolkien", cover: "https://covers.openlibrary.org/b/id/6979861-L.jpg", link: "https://openlibrary.org/works/OL262758W" },
+      { title: "Charlotte's Web", author: "E. B. White", cover: "https://covers.openlibrary.org/b/id/8225263-L.jpg", link: "https://openlibrary.org/works/OL45883W" },
+      { title: "Secret Seven", author: "Enid Blyton", cover: "https://covers.openlibrary.org/b/id/8228757-L.jpg", link: "https://openlibrary.org/works/OL362416W" },
+      { title: "Harry Potter", author: "J.K. Rowling", cover: "https://covers.openlibrary.org/b/id/7884861-L.jpg", link: "https://openlibrary.org/works/OL82563W" },
+      { title: "The Magic Faraway Tree", author: "Enid Blyton", cover: "https://covers.openlibrary.org/b/id/8228771-L.jpg", link: "https://openlibrary.org/works/OL15555621W" }
+    ];
+
+    function displayBooks(filter = "") {
+      list.innerHTML = "";
+      let show = books.filter(book => {
+        if (enidMode && !book.author.includes("Enid Blyton")) return false;
+        return book.title.toLowerCase().includes(filter.toLowerCase()) || book.author.toLowerCase().includes(filter.toLowerCase());
+      });
+      show.forEach(book => {
+        const div = document.createElement('div');
+        div.className = 'book';
+        div.innerHTML = `
+          <img src="${book.cover}" alt="${book.title}" />
+          <h3>${book.title}</h3>
+          <p>by ${book.author}</p>
+          <a href="${book.link}" target="_blank"><button>Read 📖</button></a>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function getRandomBook() {
+      const options = books.filter(b => !enidMode || b.author.includes("Enid Blyton"));
+      const pick = options[Math.floor(Math.random() * options.length)];
+      alert(`Your random book is: ${pick.title} by ${pick.author}`);
+    }
+
+    function toggleEnidMode() {
+      enidMode = !enidMode;
+      displayBooks(searchInput.value);
+    }
+
+    function exportLibrary() {
+      const data = JSON.stringify(books, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'book-heaven-library.json';
+      a.click();
+    }
+
+    searchInput.addEventListener('input', () => displayBooks(searchInput.value));
+    themeSelect.addEventListener('change', () => {
+      document.body.setAttribute('data-theme', themeSelect.value);
     });
+
+    window.addEventListener('load', () => displayBooks());
   </script>
 </body>
 </html>
-
