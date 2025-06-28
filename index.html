@@ -8,68 +8,39 @@
   <link rel="icon" href="icon-192.png" />
   <style>
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to right, #667eea, #764ba2);
       color: white;
-      margin: 0;
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
     header {
+      text-align: center;
       padding: 1rem;
       background: #5a67d8;
-      text-align: center;
       font-size: 2rem;
       font-weight: bold;
       box-shadow: 0 4px 8px #00000033;
-      position: relative;
-    }
-    #clear-chat {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: #4fd1c5;
-      border: none;
-      border-radius: 1rem;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      font-weight: bold;
-      color: black;
     }
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
       padding: 1rem;
-      overflow-y: auto;
     }
-    .bubble {
-      max-width: 70%;
-      margin: 0.5rem;
-      padding: 1rem;
-      border-radius: 1rem;
-      box-shadow: 0 2px 6px #00000033;
-      white-space: pre-wrap;
-    }
-    .user {
-      align-self: flex-end;
-      background: #805ad5;
-    }
-    .bot {
-      align-self: flex-start;
+    .intro {
       background: #4fd1c5;
       color: black;
-    }
-    .typing {
-      font-style: italic;
-      opacity: 0.8;
+      padding: 1rem;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px #00000033;
     }
     form {
       display: flex;
-      padding: 1rem;
-      background: #5a67d8;
+      margin-top: auto;
     }
     input {
       flex: 1;
@@ -88,97 +59,37 @@
       font-weight: bold;
       cursor: pointer;
     }
+    .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      padding: 0.5rem;
+    }
   </style>
 </head>
 <body>
-  <header>
-    🤖 ChatNova
-    <button id="clear-chat">Clear</button>
-  </header>
-  <main id="chat"></main>
-  <form id="chat-form">
-    <input id="message" placeholder="Say something..." required />
-    <button type="submit">Send</button>
-  </form>
+  <header>🤖 ChatNova</header>
+  <main>
+    <div class="intro">
+      Hey Spark! 👋 I’m Nova — your AI-powered reading buddy. Type what kind of book you want and I’ll launch ChatGPT for you!
+    </div>
+    <form id="nova-form">
+      <input id="userPrompt" placeholder="e.g. I want a mystery like Famous Five..." required />
+      <button type="submit">Ask Nova</button>
+    </form>
+  </main>
+  <div class="footer">Built with 💜 by Spark & Nova</div>
 
   <script>
-    const chat = document.getElementById('chat');
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('message');
-    const clearBtn = document.getElementById('clear-chat');
-
-    function appendMessage(text, type) {
-      const div = document.createElement('div');
-      div.className = `bubble ${type}`;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function appendTyping() {
-      const div = document.createElement('div');
-      div.className = 'bubble bot typing';
-      div.textContent = 'Nova is typing...';
-      div.id = 'typing';
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function removeTyping() {
-      const typing = document.getElementById('typing');
-      if (typing) typing.remove();
-    }
-
-    function saveChat() {
-      localStorage.setItem('chatNovaHistory', chat.innerHTML);
-    }
-
-    function loadChat() {
-      const saved = localStorage.getItem('chatNovaHistory');
-      if (saved) chat.innerHTML = saved;
-    }
-
-    function clearChat() {
-      chat.innerHTML = '';
-      localStorage.removeItem('chatNovaHistory');
-      appendMessage("Hi! I'm Nova 🤖 — your friendly chatbot! Ask me anything.", 'bot');
-    }
-
-    form.addEventListener('submit', async (e) => {
+    document.getElementById('nova-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const userMsg = input.value;
-      appendMessage(userMsg, 'user');
-      input.value = '';
-      saveChat();
-
-      appendTyping();
-
-      try {
-        const response = await fetch("https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ inputs: { text: userMsg } })
-        });
-        const data = await response.json();
-        removeTyping();
-        const botMsg = data?.generated_text || "Hmm... I didn't quite catch that.";
-        appendMessage(botMsg, 'bot');
-        saveChat();
-      } catch (error) {
-        removeTyping();
-        appendMessage("Oops! Something went wrong.", 'bot');
-      }
-    });
-
-    clearBtn.addEventListener('click', clearChat);
-
-    // Load chat history and greeting on startup
-    window.addEventListener('load', () => {
-      loadChat();
-      if (!chat.innerHTML) {
-        appendMessage("Hi! I'm Nova 🤖 — your friendly chatbot! Ask me anything.", 'bot');
+      const input = document.getElementById('userPrompt').value.trim();
+      if (input) {
+        const encoded = encodeURIComponent("I want a book recommendation. " + input);
+        window.open(`https://chat.openai.com/chat?prompt=${encoded}`, '_blank');
       }
     });
   </script>
 </body>
 </html>
+
