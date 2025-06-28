@@ -177,17 +177,59 @@
         list.appendChild(div);
       });
 
-      // ReadAnyBook mock (manual placeholder since there's no API)
-      if (page === 1 && currentQuery.toLowerCase().includes("blyton")) {
+      // Internet Archive
+      const iaRes = await fetch(`https://archive.org/advancedsearch.php?q=title:${encodeURIComponent(currentQuery)}&fl[]=identifier&rows=5&page=${page}&output=json`);
+      const iaData = await iaRes.json();
+      iaData.response.docs.forEach(item => {
+        const id = item.identifier;
         const div = document.createElement('div');
         div.className = 'book';
         div.innerHTML = `
-          <h3>Five on a Treasure Island</h3>
-          <p>Enid Blyton</p>
-          <button onclick="openReader('https://readanybook.com/online/565412')">Read 📖</button>
+          <h3>${id}</h3>
+          <p>Internet Archive</p>
+          <button onclick="openReader('https://archive.org/stream/${id}?ui=embed')">Read 📖</button>
         `;
         list.appendChild(div);
+      });
+
+      // ReadAnyBook (manual links)
+      if (page === 1 && currentQuery.toLowerCase().includes("blyton")) {
+        const readLinks = [
+          { title: "Five on a Treasure Island", url: "https://readanybook.com/online/565412" },
+          { title: "Five Go Adventuring Again", url: "https://readanybook.com/online/565413" }
+        ];
+        readLinks.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'book';
+          div.innerHTML = `
+            <h3>${item.title}</h3>
+            <p>ReadAnyBook</p>
+            <button onclick="openReader('${item.url}')">Read 📖</button>
+          `;
+          list.appendChild(div);
+        });
       }
+
+      // Harry Potter books (always include)
+      const hpLinks = [
+        { title: "Harry Potter and the Philosopher's Stone", url: "https://readanybook.com/online/565520" },
+        { title: "Harry Potter and the Chamber of Secrets", url: "https://readanybook.com/online/565521" },
+        { title: "Harry Potter and the Prisoner of Azkaban", url: "https://readanybook.com/online/565522" },
+        { title: "Harry Potter and the Goblet of Fire", url: "https://readanybook.com/online/565523" },
+        { title: "Harry Potter and the Order of the Phoenix", url: "https://readanybook.com/online/565524" },
+        { title: "Harry Potter and the Half-Blood Prince", url: "https://readanybook.com/online/565525" },
+        { title: "Harry Potter and the Deathly Hallows", url: "https://readanybook.com/online/565526" }
+      ];
+      hpLinks.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'book';
+        div.innerHTML = `
+          <h3>${item.title}</h3>
+          <p>ReadAnyBook</p>
+          <button onclick="openReader('${item.url}')">Read 📖</button>
+        `;
+        list.appendChild(div);
+      });
 
       page++;
       loading = false;
@@ -219,4 +261,3 @@
   </script>
 </body>
 </html>
-
